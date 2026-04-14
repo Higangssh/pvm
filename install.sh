@@ -22,10 +22,10 @@ API_URL="https://api.github.com/repos/${REPO}/releases/latest"
 printf '==> Installing pvm for %s/%s\n' "$OS" "$ARCH"
 RELEASE_JSON=$(curl -fsSL "$API_URL")
 TAG=$(printf '%s' "$RELEASE_JSON" | grep '"tag_name":' | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
-URL=$(printf '%s' "$RELEASE_JSON" | python3 - "$ASSET" <<'PY'
-import json, sys
+URL=$(RELEASE_JSON="$RELEASE_JSON" python3 - "$ASSET" <<'PY'
+import json, os, sys
 asset = sys.argv[1]
-data = json.load(sys.stdin)
+data = json.loads(os.environ['RELEASE_JSON'])
 for item in data.get('assets', []):
     if item.get('name') == asset:
         print(item.get('browser_download_url', ''))
