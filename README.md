@@ -32,21 +32,31 @@ Pick whichever you prefer:
 
 ### Option 1 — One-line install (auto PATH setup)
 
+Windows:
+
 ```powershell
 irm https://raw.githubusercontent.com/Higangssh/pvm/main/install.ps1 | iex
 ```
 
-Downloads the latest `pvm.exe` to `%LOCALAPPDATA%\pvm` and adds it to your user `PATH`. Restart your terminal and run `pvm --help`.
+macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Higangssh/pvm/main/install.sh | sh
+```
+
+Downloads the latest binary and adds it to your user PATH. Restart your terminal, or `source` your shell rc, then run `pvm --help`.
 
 ### Option 2 — Manual download (no script)
 
-1. Download `pvm.exe` from the [latest release](https://github.com/Higangssh/pvm/releases/latest).
-2. Drop it anywhere — for example `C:\tools\pvm.exe` or your project folder.
+1. Download the right binary from the [latest release](https://github.com/Higangssh/pvm/releases/latest).
+   - Windows: `pvm.exe`
+   - macOS Intel: `pvm-darwin-amd64`
+   - macOS Apple Silicon: `pvm-darwin-arm64`
+2. Rename it to `pvm` on macOS if needed, then place it somewhere on your `PATH`.
 3. Run it:
-   ```powershell
-   .\pvm.exe --help
+   ```bash
+   ./pvm --help
    ```
-4. (Optional) To use `pvm` from any directory, move `pvm.exe` into a folder that's already on your `PATH`, or add its folder to `PATH` manually.
 
 ### Option 3 — Build from source (requires Go 1.21+)
 
@@ -177,11 +187,19 @@ It's plain JSON, feel free to edit by hand or back it up.
 
 ### One-line uninstall
 
+Windows:
+
 ```powershell
 irm https://raw.githubusercontent.com/Higangssh/pvm/main/uninstall.ps1 | iex
 ```
 
-Removes `pvm.exe`, cleans up the user `PATH` entry, and optionally deletes the config file.
+macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Higangssh/pvm/main/uninstall.sh | sh
+```
+
+Removes the installed binary and optionally deletes the config file.
 
 ### Manual uninstall
 
@@ -201,7 +219,7 @@ No services, registry entries, or background processes are ever created — pvm 
 
 ## Roadmap
 
-- [ ] Linux / macOS support
+- [ ] Linux support
 - [ ] `pvm create <path>` — create new venvs
 - [ ] `pvm pip-freeze` / `pvm pip-sync` across venvs
 - [ ] Per-project `.pvm` file to auto-select venv

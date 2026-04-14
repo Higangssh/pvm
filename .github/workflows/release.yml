@@ -9,8 +9,23 @@ permissions:
   contents: write
 
 jobs:
-  release:
-    runs-on: windows-latest
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            goos: windows
+            goarch: amd64
+            asset: pvm.exe
+          - os: macos-latest
+            goos: darwin
+            goarch: amd64
+            asset: pvm-darwin-amd64
+          - os: macos-latest
+            goos: darwin
+            goarch: arm64
+            asset: pvm-darwin-arm64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -22,7 +37,21 @@ jobs:
         shell: bash
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          go build -ldflags="-s -w -X main.version=${VERSION}" -o pvm.exe .
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags="-s -w -X main.version=${VERSION}" -o ${{ matrix.asset }} .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: ${{ matrix.asset }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
 
       - name: Create release
         shell: bash
@@ -32,4 +61,6 @@ jobs:
           gh release create "${GITHUB_REF_NAME}" \
             --title "pvm ${GITHUB_REF_NAME}" \
             --generate-notes \
-            pvm.exe
+            dist/pvm.exe/pvm.exe \
+            dist/pvm-darwin-amd64/pvm-darwin-amd64 \
+            dist/pvm-darwin-arm64/pvm-darwin-arm64
