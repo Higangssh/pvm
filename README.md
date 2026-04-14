@@ -96,26 +96,26 @@ TUI keybindings: `enter`/`s` = shell · `r` = run · `x` = exec · `d` = remove 
 ## Examples
 
 ```powershell
-# Register all venvs under your workspace
-pvm scan C:\m2mtech\workspace
-# + ephone-server  C:\m2mtech\workspace\ephone-server\venv
-# + ephone-tester  C:\m2mtech\workspace\ephone-tester\venv
+# Register all venvs under a workspace folder
+pvm scan C:\projects
+# + my-api    C:\projects\my-api\venv
+# + my-app    C:\projects\my-app\.venv
 # Added 2 venv(s).
 
 # Quick Python check
-pvm run ephone-server --version
-# Python 3.13.5
+pvm run my-api --version
+# Python 3.12.0
 
-# Install a package
-pvm exec ephone-server -- pip install requests
+# Install a package inside the venv
+pvm exec my-api -- pip install requests
 
 # Bookmark a common command
-pvm save ephone-server serve python manage.py runserver 0.0.0.0:8000
-pvm save ephone-server test  pytest -v
+pvm save my-api serve python manage.py runserver 0.0.0.0:8000
+pvm save my-api test  pytest -v
 
 # Use the bookmark
-pvm do ephone-server serve
-pvm do ephone-server test
+pvm do my-api serve
+pvm do my-api test
 
 # Interactive mode
 pvm ui
@@ -135,8 +135,8 @@ Stored at `%APPDATA%\pvm\config.json`. It's plain JSON — feel free to edit by 
 {
   "venvs": [
     {
-      "alias": "ephone-server",
-      "path": "C:\\m2mtech\\workspace\\ephone-server\\venv",
+      "alias": "my-api",
+      "path": "C:\\projects\\my-api\\venv",
       "commands": {
         "serve": "python manage.py runserver 0.0.0.0:8000",
         "test":  "pytest -v"
@@ -145,6 +145,32 @@ Stored at `%APPDATA%\pvm\config.json`. It's plain JSON — feel free to edit by 
   ]
 }
 ```
+
+## Uninstall
+
+### One-line uninstall
+
+```powershell
+irm https://raw.githubusercontent.com/Higangssh/pvm/main/uninstall.ps1 | iex
+```
+
+Removes `pvm.exe`, cleans up the user `PATH` entry, and optionally deletes the config file.
+
+### Manual uninstall
+
+```powershell
+# 1. Remove the binary folder
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\pvm"
+
+# 2. (Optional) Remove your saved venv list
+Remove-Item -Recurse -Force "$env:APPDATA\pvm"
+
+# 3. Remove from PATH
+#    Win + R -> sysdm.cpl -> Advanced -> Environment Variables
+#    Edit user `Path` -> remove the `...\AppData\Local\pvm` entry
+```
+
+No services, registry entries, or background processes are ever created — pvm is just an executable file.
 
 ## Roadmap
 
