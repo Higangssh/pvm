@@ -222,7 +222,11 @@ func runCmd() *cobra.Command {
 		DisableFlagParsing: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			v := resolveVenv(args[0])
-			c := exec.Command(pythonExe(v.Path), args[1:]...)
+			pythonArgs := args[1:]
+			if len(pythonArgs) > 0 && pythonArgs[0] == "--" {
+				pythonArgs = pythonArgs[1:]
+			}
+			c := exec.Command(pythonExe(v.Path), pythonArgs...)
 			c.Env = activatedEnv(v.Path)
 			c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
 			if err := c.Run(); err != nil {
