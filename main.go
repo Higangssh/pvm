@@ -12,10 +12,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var version = "0.1.0"
+
 func main() {
 	root := &cobra.Command{
-		Use:   "pvm",
-		Short: "Python venv manager (Windows)",
+		Use:     "pvm",
+		Short:   "Python venv manager (Windows)",
+		Version: version,
 	}
 	root.AddCommand(
 		listCmd(),

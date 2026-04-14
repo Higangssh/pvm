@@ -15,6 +15,18 @@ A fast CLI to discover, alias, and run Python virtual environments — with an i
 
 ## Install
 
+### One-line install (Windows PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/Higangssh/pvm/main/install.ps1 | iex
+```
+
+This downloads the latest release to `%LOCALAPPDATA%\pvm` and adds it to your user `PATH`. Restart your terminal and run `pvm --help`.
+
+### Manual download
+
+Grab `pvm.exe` from the [latest release](https://github.com/Higangssh/pvm/releases/latest) and place it anywhere on your `PATH`.
+
 ### From source (requires Go 1.21+)
 
 ```powershell
@@ -22,8 +34,6 @@ git clone https://github.com/Higangssh/pvm.git
 cd pvm
 go build -o pvm.exe .
 ```
-
-Move `pvm.exe` to a directory on your `PATH` (e.g. `C:\Windows\System32` or a custom `C:\tools` added to PATH).
 
 ## Quick Start
 
