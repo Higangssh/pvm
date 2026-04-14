@@ -4,6 +4,12 @@ A fast CLI to discover, alias, and run Python virtual environments — with an i
 
 > Currently Windows only. Linux/macOS support planned.
 
+<p align="center">
+  <img src="docs/list.png" alt="pvm list output" width="620">
+  <br><br>
+  <img src="docs/tui.png" alt="pvm interactive TUI" width="520">
+</p>
+
 ## Features
 
 - 🔍 **Auto-discovery** — scan any directory and register all venvs found
