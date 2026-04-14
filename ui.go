@@ -150,7 +150,8 @@ func handleAction(v *Venv, act uiAction) error {
 	case actShell:
 		fmt.Printf("Opening shell for %s...\n", v.Alias)
 		activate := filepath.Join(v.Path, "Scripts", "activate.bat")
-		c := exec.Command("cmd", "/K", activate)
+		projectDir := filepath.Dir(v.Path)
+		c := exec.Command("cmd", "/K", fmt.Sprintf(`cd /d "%s" && "%s"`, projectDir, activate))
 		c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
 		return c.Run()
 	case actRun:

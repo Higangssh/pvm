@@ -274,7 +274,8 @@ func shellCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			v := resolveVenv(args[0])
 			activate := filepath.Join(v.Path, "Scripts", "activate.bat")
-			c := exec.Command("cmd", "/K", activate)
+			projectDir := filepath.Dir(v.Path)
+			c := exec.Command("cmd", "/K", fmt.Sprintf(`cd /d "%s" && "%s"`, projectDir, activate))
 			c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
 			if err := c.Run(); err != nil {
 				fmt.Fprintln(os.Stderr, err)
