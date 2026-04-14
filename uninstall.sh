@@ -19,8 +19,14 @@ else
   echo "    $TARGET not found (skipped)"
 fi
 
-printf 'Remove config at %s too? (y/N): ' "$CONFIG_DIR"
-read -r ans || true
+if [ -t 0 ]; then
+  printf 'Remove config at %s too? (y/N): ' "$CONFIG_DIR"
+  read -r ans || true
+else
+  ans="n"
+  echo "    Non-interactive mode: keeping $CONFIG_DIR"
+fi
+
 case "$ans" in
   y|Y|yes|YES)
     rm -rf "$CONFIG_DIR"
