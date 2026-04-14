@@ -19,7 +19,7 @@ func scanDir(root string, maxDepth int) []string {
 	var found []string
 	root, _ = filepath.Abs(root)
 	rootDepth := strings.Count(root, string(os.PathSeparator))
-	filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
+	_ = filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return nil
 		}

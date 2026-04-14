@@ -47,7 +47,6 @@ type uiModel struct {
 	chosen   *Venv
 	action   uiAction
 	quitting bool
-	help     string
 }
 
 var (
@@ -179,9 +178,9 @@ func handleAction(v *Venv, act uiAction) error {
 		return c.Run()
 	case actRemove:
 		fmt.Printf("Remove %s? (y/N): ", v.Alias)
-		var ans string
-		fmt.Scanln(&ans)
-		if strings.ToLower(ans) != "y" {
+		reader := bufio.NewReader(os.Stdin)
+		ans, _ := reader.ReadString('\n')
+		if strings.ToLower(strings.TrimSpace(ans)) != "y" {
 			return nil
 		}
 		cfg := mustConfig()

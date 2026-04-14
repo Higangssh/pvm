@@ -78,9 +78,9 @@ func listCmd() *cobra.Command {
 				if len(cmds) > 0 {
 					cmdStr = green(strings.Join(cmds, ", "))
 				}
-				tw.Append(cyan(v.Alias), yellow(pythonVersion(v.Path)), gray(v.Path), cmdStr)
+				_ = tw.Append(cyan(v.Alias), yellow(pythonVersion(v.Path)), gray(v.Path), cmdStr)
 			}
-			tw.Render()
+			_ = tw.Render()
 			fmt.Printf("  %s %d venv(s)\n\n", gray("Total:"), len(c.Venvs))
 		},
 	}
