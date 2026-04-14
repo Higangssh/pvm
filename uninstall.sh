@@ -3,7 +3,11 @@ set -eu
 
 INSTALL_DIR="${HOME}/.local/bin"
 TARGET="$INSTALL_DIR/pvm"
-CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/Library/Application Support}"
+if [ -n "${XDG_CONFIG_HOME:-}" ]; then
+  CONFIG_ROOT="$XDG_CONFIG_HOME"
+else
+  CONFIG_ROOT="$HOME/Library/Application Support"
+fi
 CONFIG_DIR="$CONFIG_ROOT/pvm"
 
 printf '==> Uninstalling pvm...\n'
