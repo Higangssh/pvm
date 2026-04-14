@@ -22,16 +22,16 @@ API_URL="https://api.github.com/repos/${REPO}/releases/latest"
 printf '==> Installing pvm for %s/%s\n' "$OS" "$ARCH"
 RELEASE_JSON=$(curl -fsSL "$API_URL")
 TAG=$(printf '%s' "$RELEASE_JSON" | grep '"tag_name":' | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
-URL=$(printf '%s' "$RELEASE_JSON" | awk -v asset="$ASSET" '
-  /"name":/ { name=$0 }
-  /"browser_download_url":/ {
-    if (name ~ asset) {
-      match($0, /"browser_download_url": "([^"]+)"/, m)
-      print m[1]
-      exit
-    }
-  }
-')
+URL=$(printf '%s' "$RELEASE_JSON" | python3 - "$ASSET" <<'PY'
+import json, sys
+asset = sys.argv[1]
+data = json.load(sys.stdin)
+for item in data.get('assets', []):
+    if item.get('name') == asset:
+        print(item.get('browser_download_url', ''))
+        break
+PY
+)
 
 if [ -z "$URL" ]; then
   echo "Asset not found for $ASSET in release $TAG" >&2
