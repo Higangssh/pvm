@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -149,29 +149,32 @@ func handleAction(v *Venv, act uiAction) error {
 	switch act {
 	case actShell:
 		fmt.Printf("Opening shell for %s...\n", v.Alias)
-		activate := filepath.Join(v.Path, "Scripts", "activate.bat")
-		projectDir := filepath.Dir(v.Path)
-		c := exec.Command("cmd", "/K", fmt.Sprintf(`cd /d "%s" && "%s"`, projectDir, activate))
+		c, err := shellCommand(v.Path)
+		if err != nil {
+			return err
+		}
 		c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
 		return c.Run()
 	case actRun:
 		fmt.Printf("Python args for %s (e.g. `script.py` or `-m pip list`): ", v.Alias)
-		var line string
-		fmt.Scanln(&line)
-		parts := strings.Fields(line)
+		reader := bufio.NewReader(os.Stdin)
+		line, _ := reader.ReadString('\n')
+		parts := strings.Fields(strings.TrimSpace(line))
 		c := exec.Command(pythonExe(v.Path), parts...)
 		c.Env = activatedEnv(v.Path)
 		c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
 		return c.Run()
 	case actExec:
 		fmt.Printf("Command for %s: ", v.Alias)
-		var line string
-		fmt.Scanln(&line)
-		if line == "" {
+		reader := bufio.NewReader(os.Stdin)
+		line, _ := reader.ReadString('\n')
+		c, err := commandFromString(line, v.Path)
+		if err != nil {
+			return err
+		}
+		if c == nil {
 			return nil
 		}
-		c := exec.Command("cmd", "/C", line)
-		c.Env = activatedEnv(v.Path)
 		c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
 		return c.Run()
 	case actRemove:

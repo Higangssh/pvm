@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/Higangssh/pvm/releases/latest"><img src="https://img.shields.io/github/v/release/Higangssh/pvm?color=blue" alt="Release"></a>
-  <img src="https://img.shields.io/badge/platform-windows-lightgrey" alt="Platform">
+  <img src="https://img.shields.io/badge/platform-windows%20%7C%20macOS-lightgrey" alt="Platform">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
   <img src="https://img.shields.io/badge/go-%3E%3D1.21-00ADD8?logo=go" alt="Go">
 </p>
@@ -15,7 +15,7 @@
   <img src="docs/tui.png" alt="pvm interactive TUI" width="560">
 </p>
 
-> Currently Windows only. Linux/macOS support planned.
+> Windows and macOS supported. Linux support planned.
 
 ## Features
 
@@ -54,6 +54,14 @@ Downloads the latest `pvm.exe` to `%LOCALAPPDATA%\pvm` and adds it to your user 
 git clone https://github.com/Higangssh/pvm.git
 cd pvm
 go build -o pvm.exe .
+```
+
+macOS:
+
+```bash
+git clone https://github.com/Higangssh/pvm.git
+cd pvm
+go build -o pvm .
 ```
 
 ## Quick Start
@@ -140,11 +148,15 @@ pvm ui
 
 - **`run`** — runs the venv's `python.exe`. Good for scripts and `python -m ...`.
 - **`exec`** — runs any command with venv `PATH`/`VIRTUAL_ENV` injected. Use for `pip`, `pytest`, `django-admin`, etc.
-- **`shell`** — opens a new interactive `cmd` window with the venv activated.
+- **`shell`** — opens an interactive shell with the venv activated. On Windows this uses `cmd`. On macOS it starts your current login shell in the current terminal session.
 
 ## Configuration
 
-Stored at `%APPDATA%\pvm\config.json`. It's plain JSON — feel free to edit by hand or back it up.
+Stored at the standard user config directory:
+- Windows: `%APPDATA%\\pvm\\config.json`
+- macOS: `~/Library/Application Support/pvm/config.json`
+
+It's plain JSON, feel free to edit by hand or back it up.
 
 ```json
 {

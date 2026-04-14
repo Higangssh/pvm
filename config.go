@@ -8,22 +8,14 @@ import (
 )
 
 type Venv struct {
-	Alias    string            `json:"alias"`
-	Path     string            `json:"path"`
-	Commands map[string]string `json:"commands,omitempty"`
+	Alias       string              `json:"alias"`
+	Path        string              `json:"path"`
+	Commands    map[string]string   `json:"commands,omitempty"`
+	CommandArgs map[string][]string `json:"command_args,omitempty"`
 }
 
 type Config struct {
 	Venvs []Venv `json:"venvs"`
-}
-
-func configPath() string {
-	dir := os.Getenv("APPDATA")
-	if dir == "" {
-		home, _ := os.UserHomeDir()
-		dir = filepath.Join(home, "AppData", "Roaming")
-	}
-	return filepath.Join(dir, "pvm", "config.json")
 }
 
 func loadConfig() (*Config, error) {

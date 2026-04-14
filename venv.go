@@ -7,23 +7,6 @@ import (
 	"strings"
 )
 
-func pythonExe(venvPath string) string {
-	return filepath.Join(venvPath, "Scripts", "python.exe")
-}
-
-func isVenv(dir string) bool {
-	if _, err := os.Stat(pythonExe(dir)); err != nil {
-		return false
-	}
-	if _, err := os.Stat(filepath.Join(dir, "pyvenv.cfg")); err == nil {
-		return true
-	}
-	if _, err := os.Stat(filepath.Join(dir, "Scripts", "activate.bat")); err == nil {
-		return true
-	}
-	return false
-}
-
 func pythonVersion(venvPath string) string {
 	out, err := exec.Command(pythonExe(venvPath), "--version").CombinedOutput()
 	if err != nil {
@@ -67,23 +50,4 @@ func defaultAlias(path string) string {
 		return filepath.Base(filepath.Dir(abs))
 	}
 	return base
-}
-
-func activatedEnv(venvPath string) []string {
-	env := os.Environ()
-	out := make([]string, 0, len(env)+2)
-	venvAbs, _ := filepath.Abs(venvPath)
-	scripts := filepath.Join(venvAbs, "Scripts")
-	for _, e := range env {
-		if strings.HasPrefix(strings.ToUpper(e), "PATH=") {
-			out = append(out, "PATH="+scripts+string(os.PathListSeparator)+e[5:])
-			continue
-		}
-		if strings.HasPrefix(e, "PYTHONHOME=") {
-			continue
-		}
-		out = append(out, e)
-	}
-	out = append(out, "VIRTUAL_ENV="+venvAbs)
-	return out
 }

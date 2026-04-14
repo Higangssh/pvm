@@ -17,7 +17,7 @@ var version = "0.1.0"
 func main() {
 	root := &cobra.Command{
 		Use:     "pvm",
-		Short:   "Python venv manager (Windows)",
+		Short:   "Python venv manager",
 		Version: version,
 	}
 	root.AddCommand(
@@ -252,8 +252,11 @@ func execCmd() *cobra.Command {
 				fmt.Fprintln(os.Stderr, "no command given")
 				os.Exit(1)
 			}
-			c := exec.Command(rest[0], rest[1:]...)
-			c.Env = activatedEnv(v.Path)
+			c, err := commandFromArgs(rest, v.Path)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
 			c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
 			if err := c.Run(); err != nil {
 				if ee, ok := err.(*exec.ExitError); ok {
@@ -269,13 +272,15 @@ func execCmd() *cobra.Command {
 func shellCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "shell <alias>",
-		Short: "Open an activated cmd.exe session",
+		Short: "Open an interactive shell with the venv activated",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			v := resolveVenv(args[0])
-			activate := filepath.Join(v.Path, "Scripts", "activate.bat")
-			projectDir := filepath.Dir(v.Path)
-			c := exec.Command("cmd", "/K", fmt.Sprintf(`cd /d "%s" && "%s"`, projectDir, activate))
+			c, err := shellCommand(v.Path)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
 			c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
 			if err := c.Run(); err != nil {
 				fmt.Fprintln(os.Stderr, err)
@@ -301,12 +306,17 @@ func saveCmd() *cobra.Command {
 			if v.Commands == nil {
 				v.Commands = map[string]string{}
 			}
-			v.Commands[args[1]] = strings.Join(args[2:], " ")
+			if v.CommandArgs == nil {
+				v.CommandArgs = map[string][]string{}
+			}
+			joined := strings.Join(args[2:], " ")
+			v.Commands[args[1]] = joined
+			v.CommandArgs[args[1]] = append([]string(nil), args[2:]...)
 			if err := c.Save(); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
-			fmt.Printf("Saved %s.%s = %s\n", args[0], args[1], v.Commands[args[1]])
+			fmt.Printf("Saved %s.%s = %s\n", args[0], args[1], joined)
 		},
 	}
 }
@@ -318,13 +328,36 @@ func doCmd() *cobra.Command {
 		Args:  cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
 			v := resolveVenv(args[0])
+			if len(v.CommandArgs[args[1]]) > 0 {
+				parts := v.CommandArgs[args[1]]
+				c, err := commandFromArgs(parts, v.Path)
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+					os.Exit(1)
+				}
+				c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
+				if err := c.Run(); err != nil {
+					if ee, ok := err.(*exec.ExitError); ok {
+						os.Exit(ee.ExitCode())
+					}
+					fmt.Fprintln(os.Stderr, err)
+					os.Exit(1)
+				}
+				return
+			}
 			cmdStr, ok := v.Commands[args[1]]
 			if !ok {
 				fmt.Fprintf(os.Stderr, "command not found: %s.%s\n", args[0], args[1])
 				os.Exit(1)
 			}
-			c := exec.Command("cmd", "/C", cmdStr)
-			c.Env = activatedEnv(v.Path)
+			c, err := commandFromString(cmdStr, v.Path)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			if c == nil {
+				return
+			}
 			c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
 			if err := c.Run(); err != nil {
 				if ee, ok := err.(*exec.ExitError); ok {
