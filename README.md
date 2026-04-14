@@ -1,14 +1,21 @@
-# pvm — Python Venv Manager
-
-A fast CLI to discover, alias, and run Python virtual environments — with an interactive TUI.
-
-> Currently Windows only. Linux/macOS support planned.
+<h1 align="center">pvm</h1>
 
 <p align="center">
-  <img src="docs/list.png" alt="pvm list output" width="620">
-  <br><br>
-  <img src="docs/tui.png" alt="pvm interactive TUI" width="520">
+  <b>A fast CLI to discover, alias, and run Python virtual environments — with an interactive TUI.</b>
 </p>
+
+<p align="center">
+  <a href="https://github.com/Higangssh/pvm/releases/latest"><img src="https://img.shields.io/github/v/release/Higangssh/pvm?color=blue" alt="Release"></a>
+  <img src="https://img.shields.io/badge/platform-windows-lightgrey" alt="Platform">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
+  <img src="https://img.shields.io/badge/go-%3E%3D1.21-00ADD8?logo=go" alt="Go">
+</p>
+
+<p align="center">
+  <img src="docs/tui.png" alt="pvm interactive TUI" width="560">
+</p>
+
+> Currently Windows only. Linux/macOS support planned.
 
 ## Features
 
@@ -76,6 +83,10 @@ pvm run  my-app script.py         # run python with args
 | `pvm remove <alias>` | Unregister a venv |
 | `pvm alias <old> <new>` | Rename an alias |
 
+<p align="center">
+  <img src="docs/list.png" alt="pvm list output" width="640">
+</p>
+
 ### Execution
 
 | Command | Description |
@@ -91,13 +102,11 @@ pvm run  my-app script.py         # run python with args
 | `pvm save <alias> <name> <cmd...>` | Save a custom command for a venv |
 | `pvm do <alias> <name>` | Run a saved command |
 
-### Interactive
+### Interactive TUI
 
-| Command | Description |
-|---|---|
-| `pvm ui` | Full-screen TUI — arrow keys to navigate, filter, run, delete |
+Run `pvm ui` for a full-screen browser (shown in the header above).
 
-TUI keybindings: `enter`/`s` = shell · `r` = run · `x` = exec · `d` = remove · `/` = filter · `q` = quit
+**Keybindings**: `enter`/`s` = shell · `r` = run · `x` = exec · `d` = remove · `/` = filter · `q` = quit
 
 ## Examples
 
