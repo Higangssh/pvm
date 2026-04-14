@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/tui.png" alt="pvm interactive TUI" width="560">
+  <img src="demo/pvm-clean-final.gif" alt="pvm demo: list and interactive UI" width="860">
 </p>
 
 > Windows and macOS supported. Linux support planned.
@@ -101,10 +101,6 @@ pvm run  my-app script.py         # run python with args
 | `pvm remove <alias>` | Unregister a venv |
 | `pvm alias <old> <new>` | Rename an alias |
 
-<p align="center">
-  <img src="docs/list.png" alt="pvm list output" width="640">
-</p>
-
 ### Execution
 
 | Command | Description |
@@ -122,7 +118,7 @@ pvm run  my-app script.py         # run python with args
 
 ### Interactive TUI
 
-Run `pvm ui` for a full-screen browser (shown in the header above).
+Run `pvm ui` for a full-screen browser (shown in the demo above).
 
 **Keybindings**: `enter`/`s` = shell · `r` = run · `x` = exec · `d` = remove · `/` = filter · `q` = quit
 
