@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="logo.png" alt="pvm logo" width="180">
+  <img src="logo.png" alt="pvm logo" width="360">
 </p>
-
-<h1 align="center">pvm</h1>
 
 <p align="center">
   <b>A fast CLI to discover, alias, and run Python virtual environments — with an interactive TUI.</b>
