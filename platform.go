@@ -85,7 +85,8 @@ func shellCommand(venvPath string) (*exec.Cmd, error) {
 	activate := activationScript(venvPath)
 
 	if runtime.GOOS == "windows" {
-		c := exec.Command("cmd", "/K", fmt.Sprintf(`cd /d "%s" && "%s"`, projectDir, activate))
+		c := exec.Command("cmd", "/K", activate)
+		c.Dir = projectDir
 		c.Env = activatedEnv(venvPath)
 		return c, nil
 	}
