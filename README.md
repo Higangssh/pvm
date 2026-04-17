@@ -82,14 +82,55 @@ go build -o pvm .
 # 1. Discover every venv under a workspace
 pvm scan C:\projects
 
-# 2. See the list
+# 2. See what got registered
 pvm list
 
 # 3. Run something
-pvm shell my-app                  # open an activated cmd window
+pvm shell my-app                  # open an activated shell
 pvm exec my-app -- pip list       # run any command in the venv
 pvm run  my-app script.py         # run python with args
 ```
+
+### First-time flow
+
+`pvm` does not auto-scan on `list`.
+
+That means your first run is usually:
+
+```powershell
+pvm scan C:\projects
+pvm list
+```
+
+- `scan` = find venvs and register them
+- `list` = show already-registered venvs
+- `add` = register one venv manually
+- `remove` = remove one registered venv by alias
+
+### How aliases are chosen
+
+When you run `scan`, `pvm` creates aliases for you automatically.
+
+- If the folder name is `.venv`, `venv`, or `env`, it uses the **parent folder name**
+  - `C:\work\my-api\.venv` → `my-api`
+- Otherwise it uses the **venv folder name itself**
+  - `C:\work\my-api\backend-runtime` → `backend-runtime`
+
+If the alias already exists, `pvm` adds a number like `2`, `3`, etc.
+
+### Add and remove are now safer
+
+Both commands now show exactly what they are about to change and ask for confirmation.
+
+```powershell
+pvm add C:\work\my-api\.venv
+# Add my-api (C:\work\my-api\.venv)? [y/N]
+
+pvm remove my-api
+# Remove my-api (C:\work\my-api\.venv)? [y/N]
+```
+
+Use `-y` or `--yes` to skip confirmation.
 
 ## Commands
 
@@ -99,8 +140,8 @@ pvm run  my-app script.py         # run python with args
 |---|---|
 | `pvm list` | Show all registered venvs (alias, Python version, path, saved commands) |
 | `pvm scan <path>` | Recursively find venvs in a directory and register them (`-d` for max depth, default 4) |
-| `pvm add <path> [-a alias]` | Register a venv manually |
-| `pvm remove <alias>` | Unregister a venv |
+| `pvm add <path> [-a alias] [-y]` | Register a venv manually (with confirmation by default) |
+| `pvm remove <alias> [-y]` | Unregister a venv by alias (with confirmation by default) |
 | `pvm alias <old> <new>` | Rename an alias |
 
 ### Execution
@@ -132,6 +173,19 @@ pvm scan C:\projects
 # + my-api    C:\projects\my-api\venv
 # + my-app    C:\projects\my-app\.venv
 # Added 2 venv(s).
+
+# See aliases before removing anything
+pvm list
+
+# Add one env manually
+pvm add C:\projects\tools\backend-runtime
+
+# Remove one env safely
+pvm remove my-api
+
+# Skip confirmation when you want automation
+pvm add C:\projects\tools\backend-runtime -y
+pvm remove my-api -y
 
 # Quick Python check
 pvm run my-api --version
