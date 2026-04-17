@@ -126,6 +126,7 @@ func scanCmd() *cobra.Command {
 
 func addCmd() *cobra.Command {
 	var alias string
+	var yes bool
 	cmd := &cobra.Command{
 		Use:   "add <path>",
 		Short: "Register a venv manually",
@@ -136,11 +137,22 @@ func addCmd() *cobra.Command {
 				fmt.Fprintf(os.Stderr, "not a venv: %s\n", path)
 				os.Exit(1)
 			}
-			if alias == "" {
-				alias = defaultAlias(path)
+			aliasName := alias
+			if aliasName == "" {
+				aliasName = defaultAlias(path)
+			}
+			if !yes {
+				fmt.Printf("Add %s (%s)? [y/N]: ", aliasName, path)
+				var ans string
+				fmt.Scanln(&ans)
+				ans = strings.ToLower(strings.TrimSpace(ans))
+				if ans != "y" && ans != "yes" {
+					fmt.Println("Cancelled.")
+					return
+				}
 			}
 			c := mustConfig()
-			if err := c.Add(Venv{Alias: alias, Path: path}); err != nil {
+			if err := c.Add(Venv{Alias: aliasName, Path: path}); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
@@ -148,10 +160,11 @@ func addCmd() *cobra.Command {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
-			fmt.Printf("Added %s -> %s\n", alias, path)
+			fmt.Printf("Added %s -> %s\n", aliasName, path)
 		},
 	}
 	cmd.Flags().StringVarP(&alias, "alias", "a", "", "alias name")
+	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "add without confirmation")
 	return cmd
 }
 
