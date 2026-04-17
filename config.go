@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 )
 
 type Venv struct {
@@ -55,11 +57,25 @@ func (c *Config) Find(alias string) (*Venv, int) {
 	return nil, -1
 }
 
+func canonicalPath(path string) string {
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		abs = path
+	}
+	if resolved, err := filepath.EvalSymlinks(abs); err == nil {
+		abs = resolved
+	}
+	abs = filepath.Clean(abs)
+	if runtime.GOOS == "windows" {
+		abs = strings.ToLower(abs)
+	}
+	return abs
+}
+
 func (c *Config) FindByPath(path string) *Venv {
-	abs, _ := filepath.Abs(path)
+	canon := canonicalPath(path)
 	for i := range c.Venvs {
-		vAbs, _ := filepath.Abs(c.Venvs[i].Path)
-		if vAbs == abs {
+		if canonicalPath(c.Venvs[i].Path) == canon {
 			return &c.Venvs[i]
 		}
 	}
