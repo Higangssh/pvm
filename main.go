@@ -156,17 +156,28 @@ func addCmd() *cobra.Command {
 }
 
 func removeCmd() *cobra.Command {
-	return &cobra.Command{
+	var yes bool
+	cmd := &cobra.Command{
 		Use:     "remove <alias>",
 		Aliases: []string{"rm"},
 		Short:   "Remove a venv from registry",
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			c := mustConfig()
-			_, i := c.Find(args[0])
+			v, i := c.Find(args[0])
 			if i < 0 {
 				fmt.Fprintf(os.Stderr, "alias not found: %s\n", args[0])
 				os.Exit(1)
+			}
+			if !yes {
+				fmt.Printf("Remove %s (%s)? [y/N]: ", v.Alias, v.Path)
+				var ans string
+				fmt.Scanln(&ans)
+				ans = strings.ToLower(strings.TrimSpace(ans))
+				if ans != "y" && ans != "yes" {
+					fmt.Println("Cancelled.")
+					return
+				}
 			}
 			c.Venvs = append(c.Venvs[:i], c.Venvs[i+1:]...)
 			if err := c.Save(); err != nil {
@@ -176,6 +187,8 @@ func removeCmd() *cobra.Command {
 			fmt.Printf("Removed %s\n", args[0])
 		},
 	}
+	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "remove without confirmation")
+	return cmd
 }
 
 func aliasCmd() *cobra.Command {
