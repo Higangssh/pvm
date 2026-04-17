@@ -144,7 +144,7 @@ func addCmd() *cobra.Command {
 			if !yes {
 				fmt.Printf("Add %s (%s)? [y/N]: ", aliasName, path)
 				var ans string
-				fmt.Scanln(&ans)
+				_, _ = fmt.Scanln(&ans)
 				ans = strings.ToLower(strings.TrimSpace(ans))
 				if ans != "y" && ans != "yes" {
 					fmt.Println("Cancelled.")
@@ -185,7 +185,7 @@ func removeCmd() *cobra.Command {
 			if !yes {
 				fmt.Printf("Remove %s (%s)? [y/N]: ", v.Alias, v.Path)
 				var ans string
-				fmt.Scanln(&ans)
+				_, _ = fmt.Scanln(&ans)
 				ans = strings.ToLower(strings.TrimSpace(ans))
 				if ans != "y" && ans != "yes" {
 					fmt.Println("Cancelled.")
